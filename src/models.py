@@ -1,7 +1,7 @@
 import os
 import sys
 
-from sqlalchemy import Column, ForeignKey, Integer, String, Enum
+from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
@@ -9,30 +9,17 @@ from eralchemy2 import render_er
 
 Base = declarative_base()
 
-class Favorites(Base):
-    __tablename__ = 'favorites'
-    # Here we define columns for the table person
-    # Notice that each column is also a normal Python instance attribute.
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('user.id'))
-    character_id = Column(Integer, ForeignKey('characters.id'))
-    planet_id = Column(Integer, ForeignKey('planets.id'))
-
-    user = relationship("User", back_populates = "favorites")
-
 class User(Base):
     __tablename__ = 'user'
     # Here we define columns for the table address.
     # Notice that each column is also a normal Python instance attribute.
     id = Column(Integer, primary_key=True)
-    username = Column(String)
-    firstname = Column(String)
-    lastname = Column(String)
-    email = Column(String)
+    username = Column(String, nullable=False, unique=True)
+    firstname = Column(String, nullable=False)
+    lastname = Column(String, nullable=True)
+    email = Column(String, nullable=False, unique=True)
 
     favorites = relationship("Favorites", back_populates = "user")
-    post = relationship("Post", back_populates = "user")
-    comment = relationship("Comment", back_populates = "user")
     characters = relationship("Characters", back_populates = "user")
     planets = relationship("Planets", back_populates = "user")
 
@@ -49,27 +36,38 @@ class User(Base):
     def save_characters(self):
         return {}
 
+class Favorites(Base):
+    __tablename__ = 'favorites'
+    # Here we define columns for the table person
+    # Notice that each column is also a normal Python instance attribute.
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    character_id = Column(Integer, ForeignKey('characters.id'))
+    planet_id = Column(Integer, ForeignKey('planets.id'))
+
+    user = relationship("User", back_populates = "favorites")
+
 class Characters(Base):
-    __tablename__ = 'character'
+    __tablename__ = 'characters'
     # Here we define columns for the table address.
     # Notice that each column is also a normal Python instance attribute.
     id = Column(Integer, primary_key=True)
-    name = Column(String)
-    birth_year = Column(String) 
-    eye_color = Column(String)
-    films = Column(String)
-    gender = Column(String)
-    hair_color = Column(String)
-    height = Column(String)
-    homeworld = Column(String)
-    mass = Column(String)
-    skin_color = Column(String)
-    created = Column(String)
-    edited = Column(String)
-    species = Column(String)
-    starships = Column(String)
-    url = Column(String)
-    vehicles = Column(String)
+    name = Column(String, nullable=False)
+    birth_year = Column(String, nullable=True) 
+    eye_color = Column(String, nullable=True)
+    films = Column(String, nullable=True)
+    gender = Column(String, nullable=True)
+    hair_color = Column(String, nullable=True)
+    height = Column(String, nullable=True)
+    homeworld = Column(String, nullable=True)
+    mass = Column(String, nullable=True)
+    skin_color = Column(String, nullable=True)
+    created = Column(String, nullable=True)
+    edited = Column(String, nullable=True)
+    species = Column(String, nullable=True)
+    starships = Column(String, nullable=True)
+    url = Column(String, nullable=True)
+    vehicles = Column(String, nullable=True)
 
     user = relationship("User", back_populates = "characters")
 
@@ -81,61 +79,26 @@ class Planets(Base):
     # Here we define columns for the table address.
     # Notice that each column is also a normal Python instance attribute.
     id = Column(Integer, primary_key=True)
-    climate = Column(String)
-    created = Column(String)
-    diameter = Column(String)
-    edited = Column(String)
-    films = Column(String)
-    gravity = Column(String)
-    name = Column(String)
-    orbital_period = Column(String)
-    population = Column(String)
-    residents = Column(String)
-    rotation_period = Column(String)
-    surface_water = Column(String)
-    terrain = Column(String)
-    url = Column(String)
+    climate = Column(String, nullable=True)
+    created = Column(String, nullable=True)
+    diameter = Column(String, nullable=True)
+    edited = Column(String, nullable=True)
+    films = Column(String, nullable=True)
+    gravity = Column(String, nullable=True)
+    name = Column(String, nullable=False)
+    orbital_period = Column(String, nullable=True)
+    population = Column(String, nullable=True)
+    residents = Column(String, nullable=True)
+    rotation_period = Column(String, nullable=True)
+    surface_water = Column(String, nullable=True)
+    terrain = Column(String, nullable=True)
+    url = Column(String, nullable=True)
 
     user = relationship("User", back_populates = "planets")
 
     def to_dict(self):
         return {}
 
-
-class Media(Base):
-    __tablename__ = 'media'
-    # Here we define columns for the table person
-    # Notice that each column is also a normal Python instance attribute.
-    id = Column(Integer, primary_key=True)
-    type_media = Column(Enum)
-    url = Column(String)
-    post_id = Column(Integer, ForeignKey('post.id'))
-
-    post = relationship("Post", back_populates = "media")
-
-class Post(Base):
-    __tablename__ = 'post'
-    # Here we define columns for the table person
-    # Notice that each column is also a normal Python instance attribute.
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('user.id'))
-
-    user = relationship("User", back_populates = "post")
-    media = relationship("Media", back_populates = "post")
-    comment = relationship("Comment", back_populates = "post")
-
-
-class Comment(Base):
-    __tablename__ = 'comment'
-    # Here we define columns for the table person
-    # Notice that each column is also a normal Python instance attribute.
-    id = Column(Integer, primary_key=True)
-    comment_text = Column(String)
-    author_id = Column(Integer, ForeignKey('user.id'))
-    post_id = Column(Integer, ForeignKey('post.id'))
-
-    user = relationship("User", back_populates = "comment")
-    post = relationship("Post", back_populates = "comment")
 
 
 ## Draw from SQLAlchemy base
